@@ -230,7 +230,7 @@ export const DynamicIsland: React.FC<DynamicIslandProps> = ({
             <button
               type="button"
               onClick={onStartSimulation}
-              className="shrink-0 rounded-full bg-white/10 px-3 py-1.5 text-xs font-medium text-white no-underline hover:bg-white/20 transition-colors"
+              className="shrink-0 rounded-full bg-white/10 px-3 py-1.5 text-xs font-medium text-white no-underline hover:bg-white/20 transition-colors pointer-events-auto"
             >
               Simulate
             </button>
@@ -254,14 +254,12 @@ export const DynamicIsland: React.FC<DynamicIslandProps> = ({
   }
 
   return (
-    <div
-      className="flex items-center justify-center w-full h-full"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
+    <div className="flex items-center justify-center w-full h-full pointer-events-none">
       <motion.div
         layout
-        className="relative overflow-hidden border"
+        className="relative overflow-hidden border pointer-events-auto border-red-500"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
         style={{
           width: isExpanded ? EXPANDED_WIDTH : COLLAPSED_WIDTH,
           height: isExpanded ? EXPANDED_HEIGHT : COLLAPSED_HEIGHT,
@@ -410,7 +408,7 @@ const CollapsedView: React.FC<CollapsedViewProps> = ({
               <button
                 type="button"
                 onClick={onStartSimulation}
-                className="text-green-400 hover:text-green-300 text-[10px] font-medium underline underline-offset-0.5 shrink-0"
+                className="text-green-400 hover:text-green-300 text-[10px] font-medium underline underline-offset-0.5 shrink-0 pointer-events-auto"
               >
                 Simulate
               </button>
@@ -520,7 +518,7 @@ const ExpandedView: React.FC<ExpandedViewProps> = ({
           <button
             type="button"
             onClick={onOpenGames}
-            className="text-white/80 hover:text-white text-xs font-medium px-2 py-1 rounded bg-white/10"
+            className="text-white/80 hover:text-white text-xs font-medium px-2 py-1 rounded bg-white/10 pointer-events-auto"
             aria-label="Switch game"
           >
             Games
@@ -530,14 +528,14 @@ const ExpandedView: React.FC<ExpandedViewProps> = ({
           <button
             type="button"
             onClick={onStopSimulation}
-            className="text-amber-400/90 hover:text-amber-300 text-xs px-2 py-0.5 rounded"
+            className="text-amber-400/90 hover:text-amber-300 text-xs px-2 py-0.5 rounded pointer-events-auto"
           >
             Exit simulation
           </button>
         )}
         <button
           onClick={onClose}
-          className="text-white/60 hover:text-white transition-colors p-1"
+          className="text-white/60 hover:text-white transition-colors p-1 pointer-events-auto"
           aria-label="Close"
         >
           <svg

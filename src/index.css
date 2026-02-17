@@ -16,12 +16,14 @@ body {
   -moz-osx-font-smoothing: grayscale;
   overflow: hidden;
   background: transparent;
+  pointer-events: none;
 }
 
 #root {
   width: 100%;
   height: 100%;
   background: transparent;
+  pointer-events: none;
 }
 
 ::-webkit-scrollbar {

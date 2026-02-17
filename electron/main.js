@@ -59,6 +59,41 @@ function createWindow() {
 
   mainWindow.setIgnoreMouseEvents(true, { forward: true })
 
+  let isMouseInWindow = false
+  let mouseTrackingInterval = null
+
+  const startMouseTracking = () => {
+    if (mouseTrackingInterval) return
+    
+    mouseTrackingInterval = setInterval(() => {
+      if (!mainWindow) return
+      
+      const point = screen.getCursorScreenPoint()
+      const bounds = mainWindow.getBounds()
+      
+      const isInside = 
+        point.x >= bounds.x &&
+        point.x <= bounds.x + bounds.width &&
+        point.y >= bounds.y &&
+        point.y <= bounds.y + bounds.height
+      
+      if (isInside && !isMouseInWindow) {
+        isMouseInWindow = true
+        mainWindow.setIgnoreMouseEvents(false)
+      } else if (!isInside && isMouseInWindow) {
+        isMouseInWindow = false
+        mainWindow.setIgnoreMouseEvents(true, { forward: true })
+      }
+    }, 50)
+  }
+
+  const stopMouseTracking = () => {
+    if (mouseTrackingInterval) {
+      clearInterval(mouseTrackingInterval)
+      mouseTrackingInterval = null
+    }
+  }
+
   ipcMain.handle('resize-window', (event, { width, height }) => {
     if (mainWindow) {
       const primaryDisplay = screen.getPrimaryDisplay()
@@ -73,17 +108,16 @@ function createWindow() {
     }
   })
 
-  ipcMain.handle(
-    'set-ignore-mouse-events',
-    (event, ignore, options) => {
-      if (mainWindow) {
-        mainWindow.setIgnoreMouseEvents(
-          ignore,
-          options || { forward: true },
-        )
+  ipcMain.on('set-ignore-mouse-events', (event, ignore, options) => {
+    const win = BrowserWindow.fromWebContents(event.sender)
+    if (win) {
+      if (ignore) {
+        win.setIgnoreMouseEvents(true, { forward: true })
+      } else {
+        win.setIgnoreMouseEvents(false)
       }
-    },
-  )
+    }
+  })
 
   ipcMain.handle('close-app', () => {
     app.quit()
@@ -151,9 +185,11 @@ function createWindow() {
 
   mainWindow.once('ready-to-show', () => {
     mainWindow.show()
+    startMouseTracking()
   })
 
   mainWindow.on('closed', () => {
+    stopMouseTracking()
     mainWindow = null
   })
 }

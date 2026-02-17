@@ -79,7 +79,11 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="w-full h-full bg-transparent">
+    <div 
+      className="w-full h-full bg-transparent pointer-events-auto"
+      onMouseEnter={handleHoverStart}
+      onMouseLeave={handleHoverEnd}
+    >
       <DynamicIsland
         gameState={gameState}
         activeGameId={activeGameId}

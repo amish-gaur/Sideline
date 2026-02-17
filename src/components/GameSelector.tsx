@@ -74,7 +74,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isActive, onSelect }) => {
     <motion.button
       type="button"
       onClick={onSelect}
-      className="relative shrink-0 flex flex-col items-center justify-center rounded-xl border-2 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50 overflow-hidden"
+      className="relative shrink-0 flex flex-col items-center justify-center rounded-xl border-2 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50 overflow-hidden pointer-events-auto"
       style={{
         width: CARD_WIDTH,
         height: CARD_HEIGHT,
@@ -166,7 +166,7 @@ export const GameSelector: React.FC<GameSelectorProps> = ({
             <button
               type="button"
               onClick={onStartSimulation}
-              className="text-green-400 hover:text-green-300 text-xs font-medium px-2 py-1 rounded"
+              className="text-green-400 hover:text-green-300 text-xs font-medium px-2 py-1 rounded pointer-events-auto"
             >
               Simulate a game
             </button>
@@ -174,7 +174,7 @@ export const GameSelector: React.FC<GameSelectorProps> = ({
           <button
             type="button"
             onClick={onBack}
-            className="text-white/80 hover:text-white text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-white/10 transition-colors"
+            className="text-white/80 hover:text-white text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-white/10 transition-colors pointer-events-auto"
           >
             Back
           </button>
