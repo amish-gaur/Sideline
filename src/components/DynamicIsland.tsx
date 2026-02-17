@@ -150,21 +150,10 @@ export const DynamicIsland: React.FC<DynamicIslandProps> = ({
     }
   }, [game?.homeTeam.score, game?.awayTeam.score, game]);
 
-  useEffect(() => {
-    if (!window.electronAPI) return;
-    const width = isExpanded ? EXPANDED_WIDTH : COLLAPSED_WIDTH;
-    const height = isExpanded ? EXPANDED_HEIGHT : COLLAPSED_HEIGHT;
-    window.electronAPI.resizeWindow(width, height);
-  }, [isExpanded]);
-
   const showEmptyState =
     settingsLoaded &&
     !gameState.isLoading &&
     !gameState.hasLiveGame;
-  useEffect(() => {
-    if (!window.electronAPI || !showEmptyState) return;
-    window.electronAPI.resizeWindow(EMPTY_STATE_WIDTH, EMPTY_STATE_HEIGHT);
-  }, [showEmptyState]);
 
   const handleMouseEnter = () => {
     setIsExpanded(true);
@@ -265,19 +254,18 @@ export const DynamicIsland: React.FC<DynamicIslandProps> = ({
   }
 
   return (
-    <motion.div
+    <div
       className="flex items-center justify-center w-full h-full"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       <motion.div
         layout
-        className={`relative ${
-          isExpanded ? 'rounded-2xl' : 'rounded-full'
-        } overflow-hidden border ${!isExpanded ? 'shadow-lg' : ''}`}
+        className="relative overflow-hidden border"
         style={{
           width: isExpanded ? EXPANDED_WIDTH : COLLAPSED_WIDTH,
           height: isExpanded ? EXPANDED_HEIGHT : COLLAPSED_HEIGHT,
+          borderRadius: isExpanded ? 32 : 22,
           backgroundColor: isExpanded
             ? 'rgba(28, 28, 30, 0.92)'
             : '#000000',
@@ -294,9 +282,13 @@ export const DynamicIsland: React.FC<DynamicIslandProps> = ({
               : '0 4px 12px rgba(0,0,0,0.35), 0 0 0 1px rgba(0,0,0,0.1)',
         }}
         transition={{
-          layout: {
-            duration: 0.3,
-            ease: [0.4, 0, 0.2, 1],
+          type: 'spring',
+          stiffness: 300,
+          damping: 30,
+          borderRadius: {
+            type: 'spring',
+            stiffness: 300,
+            damping: 30,
           },
           borderColor: {
             duration: 0.2,
@@ -367,7 +359,7 @@ export const DynamicIsland: React.FC<DynamicIslandProps> = ({
           )}
         </AnimatePresence>
       </motion.div>
-    </motion.div>
+    </div>
   );
 };
 
@@ -399,7 +391,7 @@ const CollapsedView: React.FC<CollapsedViewProps> = ({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="flex items-center justify-between h-full px-4 gap-4"
+      className="flex items-center justify-between h-full px-4 gap-4 bg-transparent"
     >
       <div className="flex items-center gap-2 shrink-0">
         {actuallyLive ? (
@@ -494,7 +486,7 @@ const ExpandedView: React.FC<ExpandedViewProps> = ({
     initial={{ opacity: 0, y: -10 }}
     animate={{ opacity: 1, y: 0 }}
     exit={{ opacity: 0, y: -10 }}
-    className="p-4 h-full flex flex-col"
+    className="p-4 h-full flex flex-col bg-transparent"
   >
     <div className="flex items-center justify-between mb-3">
       <div className="flex items-center gap-2">

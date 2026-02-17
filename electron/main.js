@@ -9,6 +9,7 @@ import {
 } from 'electron'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
+import { existsSync } from 'fs'
 import Store from 'electron-store'
 
 const __filename = fileURLToPath(import.meta.url)
@@ -29,8 +30,8 @@ const store = new Store({
 function createWindow() {
   const primaryDisplay = screen.getPrimaryDisplay()
   const { x: displayX, width: displayWidth } = primaryDisplay.bounds
-  const windowWidth = 220
-  const windowHeight = 44
+  const windowWidth = 400
+  const windowHeight = 300
   const x = Math.floor(displayX + (displayWidth - windowWidth) / 2)
   const y = 18
 
@@ -46,7 +47,7 @@ function createWindow() {
     transparent: true,
     frame: false,
     alwaysOnTop: true,
-    resizable: true,
+    resizable: false,
     skipTaskbar: true,
     webPreferences: {
       preload: preloadPath,
@@ -55,6 +56,8 @@ function createWindow() {
     },
     backgroundColor: '#00000000',
   })
+
+  mainWindow.setIgnoreMouseEvents(true, { forward: true })
 
   ipcMain.handle('resize-window', (event, { width, height }) => {
     if (mainWindow) {
@@ -124,10 +127,31 @@ function createWindow() {
   if (isDevEnv) {
     mainWindow.loadURL('http://localhost:5173')
   } else {
-    mainWindow.loadFile(
-      join(__dirname, '../.vite/build/renderer/index.html'),
-    )
+    const appPath = app.getAppPath()
+    const possiblePaths = [
+      join(appPath, '.vite/build/renderer/index.html'),
+      join(__dirname, 'renderer/index.html'),
+      join(__dirname, '.vite/build/renderer/index.html'),
+      join(appPath, 'renderer/index.html'),
+    ]
+    
+    let htmlPath = possiblePaths.find(path => existsSync(path))
+    if (!htmlPath) {
+      htmlPath = possiblePaths[0]
+      console.error('HTML file not found. Tried:', possiblePaths)
+    }
+    
+    mainWindow.loadFile(htmlPath).catch((err) => {
+      console.error('Failed to load file:', err)
+      console.error('app.getAppPath():', appPath)
+      console.error('__dirname:', __dirname)
+      console.error('Tried paths:', possiblePaths)
+    })
   }
+
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.show()
+  })
 
   mainWindow.on('closed', () => {
     mainWindow = null
@@ -155,7 +179,8 @@ function createTray() {
     } else {
       const { width, height, y } = mainWindow.getBounds()
       const { x: displayX, width: displayWidth } = screen.getPrimaryDisplay().bounds
-      mainWindow.setBounds({ width, height, x: Math.floor(displayX + (displayWidth - width) / 2), y })
+      const centerX = Math.floor(displayX + (displayWidth - width) / 2)
+      mainWindow.setBounds({ width, height, x: centerX, y })
       mainWindow.show()
     }
   })
